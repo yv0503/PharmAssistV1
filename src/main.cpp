@@ -47,7 +47,7 @@ int servoTurn(int turnTimes, const int timeForRotateToNextContainer) {
     delay(timeForRotateToNextContainer); // time required to rotate to next container
     myServo.write(90);                   // stops servo
     turnTimes++;                         // counts the amount of times the servo has changed container
-      if (turnTimes > 5) {
+      if (turnTimes > 4) {
         turnTimes = 0;                   // resets once it has done a full rotation
       }
     return turnTimes;
@@ -58,32 +58,27 @@ void servoReset(const int number, const int timeForRotateToNextContainer) {
       case 1:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed1");
         myServo.write(180);
-        delay(timeForRotateToNextContainer * 5);
+        delay(timeForRotateToNextContainer * 4);
         myServo.write(90);
         break;
       case 2:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed2");
         myServo.write(180);
-        delay(timeForRotateToNextContainer * 4);
+        delay(timeForRotateToNextContainer * 3);
         myServo.write(90);
         break;
       case 3:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed3");
         myServo.write(180);
-        delay(timeForRotateToNextContainer * 3);
+        delay(timeForRotateToNextContainer * 2);
         myServo.write(90);
         break;
       case 4:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed4");
         myServo.write(180);
-        delay(timeForRotateToNextContainer * 2);
-        myServo.write(90);
-        break;
-      case 5:
-        lcdChangeText("LCD ","Blue Button", "Has been", "Pressed5");
-        myServo.write(180);
         delay(timeForRotateToNextContainer);
         myServo.write(90);
+        break;
       default: ;
     }
 }
