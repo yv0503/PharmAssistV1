@@ -8,81 +8,83 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 constexpr int redButtonPin = 2;
 constexpr int blueButtonPin = 4;
 
+int timeForRotateToNextContainer = 200; // calibration required
 int redButtonState = 0;
 int blueButtonState = 0;
 int turnTimes = 0;
 bool stateMachine = false;
 
-int middleAlign(const String &textToPrint) {
-  int centerPoint = (20 - textToPrint.length()) / 2;
+int centerAlign(const String &textToPrint) {
+  const int centerPoint = (20 - textToPrint.length()) / 2;
   return centerPoint;
 }
 
 void lcdChangeText(const String &string1, const String &string2, const String &string3, const String &string4) {
-
-    lcd.setCursor(middleAlign(string1), 0);    // move cursor the first row
-    lcd.print(string1);   // print message at the first row
-    lcd.setCursor(middleAlign(string2), 1);    // move cursor to the second row
-    lcd.print(string2);   // print message at the second row
-    lcd.setCursor(middleAlign(string3), 2);    // move cursor to the third row
-    lcd.print(string3);   // print message at the third row
-    lcd.setCursor(middleAlign(string4), 3);    // move cursor to the fourth row
-    lcd.print(string4);   // print message the fourth row
+    lcd.setCursor(centerAlign(string1), 0);    // move cursor the first row and center align
+    lcd.print(string1);                        // print message at the first row
+    lcd.setCursor(centerAlign(string2), 1);    // move cursor to the second row and center align
+    lcd.print(string2);                        // print message at the second row
+    lcd.setCursor(centerAlign(string3), 2);    // move cursor to the third row and center align
+    lcd.print(string3);                        // print message at the third row
+    lcd.setCursor(centerAlign(string4), 3);    // move cursor to the fourth row and center align
+    lcd.print(string4);                        // print message the fourth row
 }
 
 void lcdDisplayReset() {
-  lcd.setCursor(0, 0);    // move cursor the first row
-  lcd.clear();   // print message at the first row
-  lcd.setCursor(0, 1);    // move cursor to the second row
-  lcd.clear();   // print message at the second row
-  lcd.setCursor(0, 2);    // move cursor to the third row
-  lcd.clear();   // print message at the third row
-  lcd.setCursor(0, 3);    // move cursor to the fourth row
-  lcd.clear();   // print message the fourth row
+  // clears text per row
+  lcd.setCursor(0, 0);
+  lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.clear();
+  lcd.setCursor(0, 2);
+  lcd.clear();
+  lcd.setCursor(0, 3);
+  lcd.clear();
 }
 
-int servoTurn(int number) {
-    myServo.write(180);
-    delay(200);
-    myServo.write(90);
-    number++;
-      if (number > 4) {
-        number = 0;
+int servoTurn(int turnTimes, const int timeForRotateToNextContainer) {
+    myServo.write(180);                  // starts servo clockwise
+    delay(timeForRotateToNextContainer); // time required to rotate to next container
+    myServo.write(90);                   // stops servo
+    turnTimes++;                         // counts the amount of times the servo has changed container
+      if (turnTimes > 5) {
+        turnTimes = 0;                   // resets once it has done a full rotation
       }
-    return number;
+    return turnTimes;
 }
 
-void servoReset(int number) {
+void servoReset(const int number, const int timeForRotateToNextContainer) {
     switch (number) {
       case 1:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed1");
         myServo.write(180);
-        delay(1000);
+        delay(timeForRotateToNextContainer * 5);
         myServo.write(90);
         break;
       case 2:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed2");
         myServo.write(180);
-        delay(800);
+        delay(timeForRotateToNextContainer * 4);
         myServo.write(90);
         break;
       case 3:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed3");
         myServo.write(180);
-        delay(600);
+        delay(timeForRotateToNextContainer * 3);
         myServo.write(90);
         break;
       case 4:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed4");
         myServo.write(180);
-        delay(400);
+        delay(timeForRotateToNextContainer * 2);
         myServo.write(90);
         break;
       case 5:
         lcdChangeText("LCD ","Blue Button", "Has been", "Pressed5");
         myServo.write(180);
-        delay(200);
+        delay(timeForRotateToNextContainer);
         myServo.write(90);
+      default: ;
     }
 }
 
@@ -99,14 +101,16 @@ void loop() {
   blueButtonState = digitalRead(blueButtonPin);
 
   if (redButtonState == HIGH && stateMachine == false) {
+    lcdDisplayReset();
     lcdChangeText("LCD ","Red Button", "Has been", "Pressed");
-    turnTimes = servoTurn(turnTimes);
+    turnTimes = servoTurn(turnTimes, timeForRotateToNextContainer);
     stateMachine = true;
     delay(500);
   }
 
   if (blueButtonState == HIGH && stateMachine == false) {
-    servoReset(turnTimes);
+    lcdDisplayReset();
+    servoReset(turnTimes, timeForRotateToNextContainer);
     turnTimes = 0;
     stateMachine = true;
   }
