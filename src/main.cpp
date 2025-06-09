@@ -17,7 +17,7 @@ int redButtonState = 0;
 int blueButtonState = 0;
 int turnTimes = 0;
 bool pressedState = false;
-bool displayNotResetted = false;
+bool displayNotReset = false;
 
 int centerAlign(const String &textToPrint) {
   const int centerPoint = (20 - textToPrint.length()) / 2;
@@ -129,20 +129,20 @@ void loop() {
     lcdChangeText("LCD ","Red Button", "Has been", "Pressed");
     turnTimes = servoTurn(turnTimes, timeForRotateToNextContainer);
     pressedState = true;
-    displayNotResetted = true;
+    displayNotReset = true;
   }
 
   else if (blueButtonState == HIGH && pressedState == false) {
     servoReset(turnTimes, timeForRotateToNextContainer);
     turnTimes = 0;
     pressedState = true;
-    displayNotResetted = true;
+    displayNotReset = true;
   }
 
   else if (blueButtonState == LOW && redButtonState == LOW) {
-    if (displayNotResetted == true) {
+    if (displayNotReset == true) {
       lcdDisplayReset();
-      displayNotResetted = false;
+      displayNotReset = false;
     }
     lcdChangeText("Buttons","Available", "", DateTime(now));
     pressedState = false;
