@@ -58,7 +58,7 @@ int servoTurn(int turnTimes, const int timeForRotateToNextContainer) {
     return turnTimes;
 }
 
-void servoReset(const int number, const int timeForRotateToNextContainer) {
+int servoReset(int number, const int timeForRotateToNextContainer) {
   lcdDisplayReset();
     switch (number) {
       case 1:
@@ -86,8 +86,10 @@ void servoReset(const int number, const int timeForRotateToNextContainer) {
         myServo.write(90);
         break;
       default:
-        lcdChangeText("LCD","Blue Button", "Has been", "Pressed 1");
+        lcdChangeText("You cannot reset","What has been", "Resetted Already", "09238592134");
     }
+  number = 0;
+  return number;
 }
 
 String DateTime(const RtcDateTime& dt)
@@ -115,7 +117,7 @@ void setup() {
   Rtc.Begin();
   RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
   lcdChangeText("PharmAssistV1", "The Auto Dispenser", __DATE__, __TIME__); // Intro text
-  delay(2000);
+  delay(1000);
   lcdDisplayReset();
 }
 
@@ -133,8 +135,7 @@ void loop() {
   }
 
   else if (blueButtonState == HIGH && pressedState == false) {
-    servoReset(turnTimes, timeForRotateToNextContainer);
-    turnTimes = 0;
+    turnTimes = servoReset(turnTimes, timeForRotateToNextContainer);
     pressedState = true;
     displayNotReset = true;
   }
@@ -144,7 +145,7 @@ void loop() {
       lcdDisplayReset();
       displayNotReset = false;
     }
-    lcdChangeText("Buttons","Available", "", DateTime(now));
+    lcdChangeText("PharmAssistV1","Buttons", "Available", DateTime(now));
     pressedState = false;
   }
 
